@@ -1,11 +1,7 @@
-﻿
-using GPNA.OPCUA2Kafka.Model;
+﻿using GPNA.OPCUA2Kafka.Model;
 
 namespace GPNA.OPCUA2Kafka.Configurations
-{   
-    /// <summary>
-    /// Конфигурация инициализации модулей
-    /// </summary>
+{
     public class InitializationModuleConfiguration
     {
         /// <summary>
@@ -19,13 +15,9 @@ namespace GPNA.OPCUA2Kafka.Configurations
         public bool OPCUAConnectorStarted { get; set; }
 
         /// <summary>
-        /// Сохранение данных в MSSQL-БД
-        /// </summary>
-        public bool RegisterSaveStarted { get; set; }
-
-        /// <summary>
         /// включение кэширования (Store and Forward)
         /// </summary>
-        public bool CacheStarted { get; internal set; }
+        public bool CacheStarted { get; set; }
+
     }
 }

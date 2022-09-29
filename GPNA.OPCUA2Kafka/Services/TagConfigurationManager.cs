@@ -71,12 +71,15 @@ namespace GPNA.OPCUA2Kafka.Services
                 using var repository = _repositoryFactory.GetRepository<TagConfigurationEntity>();
                 foreach (var item in repository.GetAll())
                 {
-                    var key = item.Tagname;
+                    var key = (item as ITagConfiguration)?.ConvertToString() ?? throw new NullReferenceException();
                     if (!_source.ContainsKey(key))
                     {
                         _source.TryAdd(key, _mapper.Map<TagConfigurationEntity>(item));
                     }
-
+                    else
+                    {
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
                     //repository.Update(item);
                 }
                 IsLoaded = true;

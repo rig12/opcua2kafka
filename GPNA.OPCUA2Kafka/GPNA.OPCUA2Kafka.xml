@@ -35,11 +35,6 @@
             Фильтрация включена
             </summary>
         </member>
-        <member name="T:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration">
-            <summary>
-            Конфигурация инициализации модулей
-            </summary>
-        </member>
         <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.PeriodizationStarted">
             <summary>
             запуск модуля дискретности <seealso cref="P:GPNA.OPCUA2Kafka.Model.TagConfiguration.Period"/>
@@ -48,11 +43,6 @@
         <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.OPCUAConnectorStarted">
             <summary>
             Запуск сбора данных с Suitelink
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.RegisterSaveStarted">
-            <summary>
-            Сохранение данных в MSSQL-БД
             </summary>
         </member>
         <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.CacheStarted">

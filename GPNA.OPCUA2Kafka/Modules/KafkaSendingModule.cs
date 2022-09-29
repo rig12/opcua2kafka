@@ -52,12 +52,13 @@ namespace GPNA.OPCUA2Kafka.Modules
                     && _tagConfigurationManager.TagConfigurations.TryGetValue(tagValue.Tagname, out var tagconfig))
                 {
                     //var tagname = string.IsNullOrEmpty(tagconfig.Alias) ? tagconfig.Alias : tagValue.Tagname;
+                    /*
                     if(!_tagAliases.TryGetValue(tagconfig,out var tagalias))
                     {
                         _tagAliases.Add(tagconfig, tagconfig.ConvertToString());
                     }
-                    
-                    tagValue.Tagname =$"{tagconfig.Node}:\\\\{tagconfig.Tagname}";                    
+                    */
+                    //tagValue.Tagname =$"{tagconfig.Node}:\\\\{tagconfig.Tagname}";
                     result.Add((tagconfig.Topic, tagValue));
                 }
             }

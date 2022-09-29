@@ -119,9 +119,8 @@ namespace GPNA.OPCUA2Kafka
                 configuration.SetBatchNumMessages(kafkaConfiguration.BatchNumMessages);
             }
 
-
             services.AddMessageQueueAsyncConfirmProducer<TagValue>(producerConfigAction);
-
+            
             services.AddSingleton(_configuration.GetSection<InitializationModuleConfiguration>());
             services.AddSingleton(_configuration.GetSection<KafkaConfiguration>());
             services.AddSingleton(_configuration.GetSection<OPCUAConfiguration>());

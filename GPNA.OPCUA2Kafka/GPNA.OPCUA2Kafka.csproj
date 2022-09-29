@@ -101,6 +101,7 @@
     <Compile Remove="Configurations\ConveyorConfiguration.cs" />
     <Compile Remove="Configurations\DbConnectionConfiguration.cs" />
     <Compile Remove="Configurations\DescriptionDataConfiguration.cs" />
+    <Compile Remove="Configurations\InitializationModuleConfiguration_.cs" />
     <Compile Remove="Configurations\TwoTagsToMultipleConfiguration.cs" />
     <Compile Remove="Controllers\ConveyorModule\TwoTagsToMultipleController.cs" />
     <Compile Remove="Extensions\EnumerableExtensions.cs" />

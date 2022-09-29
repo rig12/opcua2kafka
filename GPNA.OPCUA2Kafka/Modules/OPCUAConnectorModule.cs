@@ -3,6 +3,7 @@ using GPNA.Converters.TagValues;
 using GPNA.DataModel.Integration;
 using GPNA.MessageQueue.Entities;
 using GPNA.OPCUA2Kafka.Configurations;
+using GPNA.OPCUA2Kafka.Extensions;
 using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.OPCUA2Kafka.Model;
 using GPNA.OPCUA2Kafka.Services;
@@ -41,7 +42,7 @@ namespace GPNA.OPCUA2Kafka.Modules
             _tagConfigurationManager = tagConfigurationManager;
             _filterDuplicateValuesModule = filterDuplicateValuesModule;
 
-            tagConfigurationManager.Load();
+            //tagConfigurationManager.Load();
             _client = new(oPCUAConfiguration.EndpointURL, 
                 true, 
                 Timeout.Infinite,
@@ -66,11 +67,12 @@ namespace GPNA.OPCUA2Kafka.Modules
                 && dataValue.Value.ToString() is string value)
             {
                 var tagvalue = _tagValueConverter.GetTagValue(value, dataValue.SourceTimestamp, dataValueTagname.Tagname, (int)dataValue.StatusCode.Code);
-                if (_tagConfigurationManager.TagConfigurations.TryGetValue(dataValueTagname.Tagname, out var tagconfig))
+                if (_tagConfigurationManager.TagConfigurations.Values.FirstOrDefault(x=>x.Tagname==tagvalue.Tagname) is TagConfigurationEntity tagconfig)
                 {
                     tagvalue.TimeStampUtc = DateTimeNow().ToUniversalTime();
                     tagvalue.OpcQuality = (int)dataValue.StatusCode.Code;
                     tagvalue.TagId = tagconfig.Id;
+                    tagvalue.Tagname = tagconfig.ConvertToString();
 
                     (_filterDuplicateValuesModule as ConveyorModule<TagValue>)?.Add(tagvalue);
                 }

@@ -52,14 +52,7 @@ namespace GPNA.OPCUA2Kafka.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public ActionResult<bool> Load()
         {
-            if (_tagConfigurationManager.Load())
-            {
-                return Ok($"Tags Reloaded - {_oPCUAConnectorModule.CompleteReload().Result}");
-            }
-            else
-            {
-                return Conflict();
-            }
+            return Ok($"Tags Reloaded - {_oPCUAConnectorModule.CompleteReload().Result}");
         }
         #endregion Common
 
