@@ -1,0 +1,822 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GPNA.OPCUA2Kafka</name>
+    </assembly>
+    <members>
+        <member name="T:GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration">
+            <summary>
+            Конфигурация конвертации значений
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration.ConvertValuesToDouble">
+            <summary>
+            задаёт использование типа конвертации - попытка преобразования данных в double
+            bool -> 0.0/1.0; int -> x.0; string -> null
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration.DatetimeParseFormat">
+            <summary>
+            Формат даты для парсинга значения тэга типа "дата-время"
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration.ToSendNullValues">
+            <summary>
+            Отправлять сообщения со значением NULL
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Configurations.FilterConfiguration">
+            <summary>
+            Конфигурация фильтрации
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.FilterConfiguration.IsEnabled">
+            <summary>
+            Фильтрация включена
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration">
+            <summary>
+            Конфигурация инициализации модулей
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.PeriodizationStarted">
+            <summary>
+            запуск модуля дискретности <seealso cref="P:GPNA.OPCUA2Kafka.Model.TagConfiguration.Period"/>
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.OPCUAConnectorStarted">
+            <summary>
+            Запуск сбора данных с Suitelink
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.RegisterSaveStarted">
+            <summary>
+            Сохранение данных в MSSQL-БД
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration.CacheStarted">
+            <summary>
+            включение кэширования (Store and Forward)
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.KafkaConfiguration.MessageTimeoutMs">
+            <summary>
+            Таймаут сообщения
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.KafkaConfiguration.Brokers">
+            <summary>
+            Хосты брокеров
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.KafkaConfiguration.ClientId">
+            <summary>
+            Идентификатор клиент-сервиса
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.KafkaConfiguration.EnableDeliveryReports">
+            <summary>
+            отчёт о доставке
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Configurations.KafkaConfiguration.QueueBufferingMaxMs">
+            <summary>
+            количество сообщений в пачке
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.ActiveModule.KafkaSendingController">
+            <summary>
+            Управление отправкой сообщений в Kafka
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.ActiveModule.KafkaSendingController.GetCount">
+            <summary>
+            Получить текущее количество сообщений, ждущих отправки
+            </summary>
+            <response code="200">Объект значения счетчика</response>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.Base.ActiveModuleController">
+            <summary>
+            Базовый класс управления модулем
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.ActiveModuleController.Restart">
+            <summary>
+            Перезапустить
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.ActiveModuleController.Start">
+            <summary>
+            Запустить
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.ActiveModuleController.Stop">
+            <summary>
+            Остановить
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.Base.ConveyorModuleController">
+            <summary>
+            Базовый класс управления конвейерным модулем
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.ConveyorModuleController.Count">
+            <summary>
+            Получить количество принятых сообщений в обработке
+            </summary>
+            <response code="200">Количество принятых сообщений в обработке</response>
+            <returns></returns>И
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.Base.MessageStatusModuleController">
+            <summary>
+            Базовый класс состояния модуля
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.MessageStatusModuleController.GetLast">
+            <summary>
+            Получить последний статус сообщение
+            </summary>
+            <response code="200">Возвращает объект MessageStatusDTO</response>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.MessageStatusModuleController.GetAll">
+            <summary>
+            Получить все сообщения
+            </summary>
+            <response code="200">Возвращает коллекцию объектов MessageStatusDTO</response>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Base.MessageStatusModuleController.Reset">
+            <summary>
+            Сбросить значения статуса
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.FilterDuplicateValuesController">
+            <summary>
+            Управление фильтрацией дублированных значений
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.OPCUAController">
+            <summary>
+            Управление сбором данных с Suitelink
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.OPCUAController.GetTagValues(System.Int32,System.Int32)">
+            <summary>
+            Получить текущие значения тэгов
+            </summary>
+            <param name="itemsOnPage">Элементов на странице. 0 - выборка всех</param>
+            <param name="pageNumber">Номер страницы. 0 - выборка всех</param>
+            <response code="200">Массив объектов. Формат JSON. Модель: GET /model </response>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.OPCUAController.GetTagValueByName(System.String)">
+            <summary>
+            Получить текущее значение тэга
+            </summary>
+            <param name="tagname">Имя тэга или часть имени тэга</param>        
+            <response code="200">Массив объектов. Формат JSON. Модель: GET /model </response>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.OPCUAController.GetTagValuesByNames(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Получить текущие значения тегов по указанным именам
+            </summary>
+            <param name="requestTagnames">Имена запрашиваемых тэгов</param>        
+            <response code="200">Массив объектов. Формат JSON. Модель: GET /model </response>
+            <returns></returns>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.PeriodizationController">
+            <summary>
+            Управление периодизацией (дискретностью) отправки данных в кафку
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.Json.TagConfigurationController">
+            <summary>
+            Конфигурация тегов
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Json.TagConfigurationController.Get(System.Int32,System.Int32)">
+            <summary>
+            Получить записи
+            </summary>
+            <param name="itemsOnPage">Элементов на странице. 0 - выборка всех</param>
+            <param name="pageNumber">Номер страницы. 0 - выборка всех</param>
+            <response code="200">Массив объектов. Формат JSON. Модель: GET /model </response>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Json.TagConfigurationController.GetById(System.Int64)">
+            <summary>
+            Получить по идентификатору записи
+            </summary>
+            <param name="id">Идентификатор в строковом виде. Число больше 0</param>
+            <response code="200">Объект <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfigurationEntity"/> </response>
+            <response code="404">Запись с таким идентификатором не найдена</response>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.Json.TagConfigurationController.GetByTagname(System.String)">
+            <summary>
+            Получить по имени тега или части имени тега
+            </summary>
+            <param name="tagname">имя тега или его часть</param>
+            <response code="200">Объект <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfigurationEntity"/> </response>      
+            <response code="404">Запись не найдена</response>
+            <returns></returns>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.MessageStatusModule.KafkaSendingController">
+            <summary>
+            Состояние отправки сообщений в Kafka
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.MessageStatusModule.OPCUAController">
+            <summary>
+            Состояние сбора данных с Suitelink
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.MessageStatusModule.PeriodizationController">
+            <summary>
+            Состояние отправки сообщений в Kafka
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController">
+            <summary>
+            Конфигурация обработки тегов
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController.Load">
+            <summary>
+            Загрузка конфигурации
+            </summary>
+            <response code="200">Конфигурация успешно загружена</response>
+            <response code="409">Конфигурация не загружена</response>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController.Add(System.Collections.Generic.IEnumerable{GPNA.OPCUA2Kafka.Model.TagConfiguration})">
+            <summary>
+            Создать конфигурацию
+            </summary>
+            <response code="200">Возвращает объект <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfigurationEntity"/></response>
+            <response code="500">Возвращает сведения о внутренней ошибке</response>
+            <param name="tagConfigurations">Объект конфигурации</param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController.Delete(System.String)">
+            <summary>
+            Удалить конфигурацию по идентификатору
+            </summary>
+            <response code="200">Возвращает в случае успеха</response>
+            <response code="500">Возвращает сведения о внутренней ошибке</response>
+            <response code="404">Возвращает если конфигурации с таким идентификатором не существует</response>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController.Update(GPNA.OPCUA2Kafka.Model.TagConfigurationEntity)">
+            <summary>
+            Обновить конфигурацию
+            </summary>
+            <response code="200">Возвращает в случае успеха</response>
+            <response code="500">Возвращает сведения о внутренней ошибке</response>
+            <response code="404">Возвращает если конфигурации с таким идентификатором не существует</response>
+            <param name="tagConfiguration">Объект конфигурации</param>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Base.TagConfigurationBaseController">
+            <summary>
+            Базовый класс конфигурации тегов
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Extensions.ExpressionExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Extensions.ExpressionExtensions.SetValue(GPNA.Converters.TagValues.TagValue,System.String,System.Object)">
+            <summary>
+            присваивает свойству <paramref name="propertyName"/> вызываемого объекта значение <paramref name="value"/>
+            </summary>
+            <param name="tagvalue"></param>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Extensions.TagConfigurationExtensions.FillTagValueData(GPNA.Converters.TagValues.TagValue,GPNA.DataModel.Integration.TagEvent)">
+            <summary>
+            копирование свойств из структуры <see cref="T:GPNA.DataModel.Integration.TagEvent"/>: <see cref="P:GPNA.DataModel.Integration.TagEvent.TimeStamp"/>  <see cref="P:GPNA.DataModel.Integration.TagEvent.Quality"/> <see cref="P:GPNA.DataModel.Integration.TagEvent.TimeStamp"/>
+            установка свойства <see cref="P:GPNA.Converters.TagValues.TagValue.TagId"/>, <see cref="P:GPNA.Converters.TagValues.TagValue.Tagname"/>
+            </summary>
+            <param name="tagValue"></param>
+            <param name="lmxTagEvent"></param>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IFilterDuplicateValuesModule">
+            <summary>
+            Интерфейс модуля фильтрации дублированных данных
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Interfaces.IFilterDuplicateValuesModule.CurrentValues">
+            <summary>
+            Текущие значения тегов
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IKafkaSendingModule">
+            <summary>
+            Интерфейс модуля отсылки данных в Kafka
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IPeriodizationModule">
+            <summary>
+            модуль отправки данных с определённой периодичностью (последнее значение в интервале)
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.IPeriodizationModule.ReloadConfig">
+            <summary>
+            перезагрузка конфигурации дискретности
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager">
+            <summary>
+            Интерфейс для управления конфигурациями тегов <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfiguration"/>
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.Load">
+            <summary>
+            Загрузить конфигурацию
+            </summary>
+            <returns>Возвращает true в случае успеха, иначе false</returns>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.TagConfigurations">
+            <summary>
+            Конфигурации тегов
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.GetByTagName(System.String)">
+            <summary>
+            получить конфигурацию по имени тега
+            </summary>
+            <param name="tagName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.GetByAlias(System.String)">
+            <summary>
+            Получить конфигурацию по имени тега
+            </summary>
+            <param name="tagName">Имя тега</param>
+            <returns>Возвращает конфигурацию</returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.Delete(System.Int64)">
+            <summary>
+            Удалить конфигурацию по идентификатору
+            </summary>
+            <returns>
+            Возвращает true в случае успешного удаления, иначе false
+            </returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.Add(System.Collections.Generic.IEnumerable{GPNA.OPCUA2Kafka.Model.TagConfiguration})">
+            <summary>
+            Добавить конфигурации
+            </summary>
+            <returns>
+            Возвращает коллекцию объектов <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfigurationEntity"/>
+            </returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.Update(GPNA.OPCUA2Kafka.Model.TagConfigurationEntity)">
+            <summary>
+            Обновить конфигурацию
+            </summary>
+            <returns>
+            Возвращает true в случае успешного обновления, иначе false
+            </returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager.ShortenName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="tagname"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagValueConverter">
+            <summary>
+            Интерфейс преобразования значений тегов
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagValueConverter.GetTagValue(GPNA.DataModel.Integration.TagEvent,System.String)">
+            <summary>
+            Преобразование значения тэга для отправки в kafka
+            </summary>
+            <param name="lmxTagEvent">событие тега SuiteLink</param>
+            <param name="datetimeParseFormat">формат парсинга даты-времени в случае типа значения тега дата-время</param>
+            <returns>если <seealso cref="P:GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration.ConvertValuesToDouble"/>, преобразует значение в double (int->x.0; bool->0.0/1.0; string->'empty'/></returns>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.ITagValueConverter.GetTagValueDouble(GPNA.DataModel.Integration.TagEvent,System.String)">
+            <summary>
+            Преобразование значения тэга в тип значения с плавающей запятой для отправки в kafka
+            </summary>
+            <param name="lmxTagEvent">событие тега SuiteLink</param>
+            <param name="datetimeParseFormat">формат парсинга даты-времени в случае типа значения тега дата-время</param>
+            <returns></returns>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.ModelDto.CountResultDto`1">
+            <summary>
+            Класс Dto для передачи значения счетчика
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDto.CountResultDto`1.Value">
+            <summary>
+            Значение счетчика
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.ModelDto.MessageStatusDto">
+            <summary>
+            Класс Dto статуса объекта
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDto.MessageStatusDto.Message">
+            <summary>
+            Сообщение
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDto.MessageStatusDto.IsException">
+            <summary>
+            Является ли последнее событие исключением
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDto.MessageStatusDto.DateTime">
+            <summary>
+            Дата/время последнего события
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.ModelDto.ResultCreatedDto">
+            <summary>
+            Результат создания сущности
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDto.ResultCreatedDto.Id">
+            <summary>
+            Идентификатор
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto.TagId">
+            <summary>
+            Идентификатор типа тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto.DateTime">
+            <summary>
+            Время фиксации тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto.OpcQuality">
+            <summary>
+            Уровень качества OPC
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto.Value">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueBoolDto.Tagname">
+            <summary>
+            Полное наименование тэга
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto">
+            <summary>
+            текущие значения тэгов
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto.TagValuesDouble">
+            <summary>
+            значения тэгов типа число с плавающей точкой
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto.TagValuesInt">
+            <summary>
+            значения тэгов целочисленного типа
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto.TagValuesBool">
+            <summary>
+            значения тэгов булевого типа
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto.TagValuesString">
+            <summary>
+            значения тэгов строкового типа
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDataDto.TagValuesNull">
+            <summary>
+            тэги с неопределённым значением (null)
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueNullDto.TagId">
+            <summary>
+            Идентификатор типа тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueNullDto.DateTime">
+            <summary>
+            Время фиксации тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueNullDto.OpcQuality">
+            <summary>
+            Уровень качества OPC
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueNullDto.Tagname">
+            <summary>
+            Полное наименование тэга
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueStringDto.TagId">
+            <summary>
+            Идентификатор типа тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueStringDto.DateTime">
+            <summary>
+            Время фиксации тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueStringDto.OpcQuality">
+            <summary>
+            Уровень качества OPC
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueStringDto.Value">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueStringDto.Tagname">
+            <summary>
+            Полное наименование тэга
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDoubleDto.TagId">
+            <summary>
+            Идентификатор типа тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDoubleDto.DateTime">
+            <summary>
+            Время фиксации тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDoubleDto.OpcQuality">
+            <summary>
+            Уровень качества OPC
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDoubleDto.Value">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueDoubleDto.Tagname">
+            <summary>
+            Полное наименование тэга
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueIntDto.TagId">
+            <summary>
+            Идентификатор типа тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueIntDto.DateTime">
+            <summary>
+            Время фиксации тега
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueIntDto.OpcQuality">
+            <summary>
+            Уровень качества OPC
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueIntDto.Value">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.ModelDTO.TagValue.TagValueIntDto.Tagname">
+            <summary>
+            Полное наименование тэга
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule">
+            <summary>
+            Класс модуля отсылки данных в Kafka
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.#ctor(Microsoft.Extensions.Logging.ILogger{GPNA.OPCUA2Kafka.Services.OPCUAClientHelper})">
+            <summary>
+            Initializes the object.
+            </summary>
+        </member>
+        <member name="F:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DefaultSessionTimeout">
+            <summary>
+            Default session values.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.SessionName">
+            <summary>
+            The name of the session to create.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DisableDomainCheck">
+            <summary>
+            Gets or sets a flag indicating that the domain checks should be ignored when connecting.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.GetEndpointDescription(System.Uri)">
+            <summary>
+            Gets the cached EndpointDescription for a Url.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ServerUrl">
+            <summary>
+            The URL displayed in the control.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.UseSecurity">
+            <summary>
+            Whether to use security when connecting.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.PreferredLocales">
+            <summary>
+            The locales to use when creating the session.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.UserIdentity">
+            <summary>
+            The user identity to use when creating the session.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Configuration">
+            <summary>
+            The client application configuration.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Session">
+            <summary>
+            The currently active session. 
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectPeriod">
+            <summary>
+            The number of seconds between reconnect attempts (0 means reconnect is disabled).
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DiscoverTimeout">
+            <summary>
+            The discover timeout.
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.SessionTimeout">
+            <summary>
+            The session timeout.
+            </summary>
+        </member>
+        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.KeepAliveComplete">
+            <summary>
+            Raised when a good keep alive from the server arrives.
+            </summary>
+        </member>
+        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectStarting">
+            <summary>
+            Raised when a reconnect operation starts.
+            </summary>
+        </member>
+        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectComplete">
+            <summary>
+            Raised when a reconnect operation completes.
+            </summary>
+        </member>
+        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectComplete">
+            <summary>
+            Raised after successfully connecting to or disconnecing from a server.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.GetAvailableUrls(System.Collections.Generic.IList{System.String})">
+            <summary>
+            Sets the URLs shown in the control.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Connect(Opc.Ua.ITransportWaitingConnection,Opc.Ua.EndpointDescription,System.Boolean,System.UInt32)">
+            <summary>
+            Creates a new session.
+            </summary>
+            <returns>The new session object.</returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Connect(System.String,System.Boolean,System.UInt32)">
+            <summary>
+            Creates a new session.
+            </summary>
+            <returns>The new session object.</returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectAsync(System.String,System.Boolean,System.UInt32)">
+            <summary>
+            Creates a new session.
+            </summary>
+            <param name="serverUrl">The URL of a server endpoint.</param>
+            <param name="useSecurity">Whether to use security.</param>
+            <param name="sessionTimeout"></param>
+            <returns>The new session object.</returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectAsync(Opc.Ua.ITransportWaitingConnection,System.Boolean,System.Int32,System.UInt32)">
+            <summary>
+            Create a new reverse connection.
+            </summary>
+            <param name="connection"></param>
+            <param name="useSecurity"></param>
+            <param name="discoverTimeout"></param>
+            <param name="sessionTimeout"></param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DisconnectAsync">
+            <summary>
+            Disconnects from the server.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.InternalDisconnect">
+            <summary>
+            Disconnects from the server.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Disconnect">
+            <summary>
+            Disconnects from the server.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DoConnectComplete(System.Object)">
+            <summary>
+            Raises the connect complete event on the main GUI thread.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Session_KeepAlive(Opc.Ua.Client.Session,Opc.Ua.Client.KeepAliveEventArgs)">
+            <summary>
+            Handles a keep alive event from a session.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Server_ConnectMI_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles a click on the connect button.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.HandleDomainCheckError(Opc.Ua.ServiceResult,System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Handles a domain validation error.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.HandleCertificateValidationError(Opc.Ua.CertificateValidator,Opc.Ua.CertificateValidationEventArgs)">
+            <summary>
+            Handles a certificate validation error.
+            </summary>
+            <param name="validator">The validator (not used).</param>
+            <param name="e">The <see cref="T:Opc.Ua.CertificateValidationEventArgs"/> instance event arguments provided when a certificate validation error occurs.</param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Server_ReconnectComplete(System.Object,System.EventArgs)">
+            <summary>
+            Handles a reconnect event complete from the reconnect handler.
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.CertificateValidator_CertificateValidation(Opc.Ua.CertificateValidator,Opc.Ua.CertificateValidationEventArgs)">
+            <summary>
+            Handles a certificate validation error.
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Services.TagConfigurationManager">
+            <summary>
+            Реализация класса управления конфигуарциями тегов
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Services.TagValueConverter">
+            <summary>
+            Класс преобразования значений тегов
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.TagValueConverter.BuildLambda(System.Type)">
+            <summary>
+            Возвращает лябмда-выражение, возвращающее экземпляр указанного в аргументе типа
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.TagValueConverter.GetValue(System.String,System.String)">
+            <summary>
+            возвращает значение value в переменной исходного типа (tryparse) в кортеже с типом
+            </summary>
+            <param name="value"></param>
+            <param name="datetimeParseFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.TagValueConverter.GetTagValueDouble(GPNA.DataModel.Integration.TagEvent,System.String)">
+            <summary>
+            конвертация значения тэга в double
+            </summary>
+            <param name="lmxTagEvent"></param>
+            <param name="datetimeParseFormat"></param>
+            <returns>double as is; int->x.0; bool->0.0/1.0; string->null</returns>
+        </member>
+    </members>
+</doc>
