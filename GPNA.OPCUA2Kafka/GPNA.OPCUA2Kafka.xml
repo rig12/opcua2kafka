@@ -290,6 +290,16 @@
             Текущие значения тегов
             </summary>
         </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IOPCUAClient">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Interfaces.IOPCUAClient.OnNotification">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager">
             <summary>
             Интерфейс для управления конфигурациями тегов <see cref="T:GPNA.OPCUA2Kafka.Model.TagConfiguration"/>
@@ -571,6 +581,37 @@
         <member name="T:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule">
             <summary>
             Класс модуля отсылки данных в Kafka
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Services.OPCUAClient">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.#ctor(System.String,System.Boolean,System.Int32,System.Int32,GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager)">
+            <summary>
+            
+            </summary>
+            <param name="endpointURL"></param>
+            <param name="autoaccept"></param>
+            <param name="stopTimeout"></param>
+            <param name="defaultPublishingInterval"></param>
+            <param name="tagConfigurationManager"></param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.Run">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClient.ExitCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClient.OnNotification">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Services.TagConfigurationManager">
