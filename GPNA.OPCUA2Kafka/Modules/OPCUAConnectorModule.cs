@@ -26,7 +26,8 @@ namespace GPNA.OPCUA2Kafka.Modules
         private readonly ITagValueConverter _tagValueConverter;
         private readonly ITagConfigurationManager _tagConfigurationManager;
         private readonly IFilterDuplicateValuesModule _filterDuplicateValuesModule;
-        private readonly OPCUAClient _client;
+        private readonly OPCUAConfiguration _oPCUAConfiguration;
+        private OPCUAClient? _client;
         private static Func<DateTime> DateTimeNow => () => DateTime.Now;
 
         public OPCUAConnectorModule(IMessageStatusManager messageStatusManager, 
@@ -41,23 +42,30 @@ namespace GPNA.OPCUA2Kafka.Modules
             _tagValueConverter = tagValueConverter;
             _tagConfigurationManager = tagConfigurationManager;
             _filterDuplicateValuesModule = filterDuplicateValuesModule;
-
+            _oPCUAConfiguration = oPCUAConfiguration;
             //tagConfigurationManager.Load();
-            _client = new(oPCUAConfiguration.EndpointURL, 
-                true, 
+
+            Task.Run(()=> CompleteReload());
+        }
+
+
+        public async Task<string> CompleteReload()
+        //Task<string>
+        {
+            _client = new(_oPCUAConfiguration.EndpointURL,
+                true,
                 Timeout.Infinite,
-                oPCUAConfiguration.DefaultPublishingInterval,
-                tagConfigurationManager.TagConfigurations.Values.AsEnumerable())
+                _oPCUAConfiguration.DefaultPublishingInterval,
+                _tagConfigurationManager)
             {
                 OnNotification = _onNotification
             };
 
-        }
+            //            var result = await _client.Run();
+            return string.Join("; ", await _client.Run());
 
-        public async Task<string> CompleteReload()
-        {
-            var result = await _client.Run();
-            return result?.ToString() ?? string.Empty;
+
+            //return result?.ToString() ?? string.Empty;
         }
 
         public override void Process(DataValueTagname dataValueTagname)

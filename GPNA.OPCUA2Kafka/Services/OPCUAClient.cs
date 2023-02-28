@@ -1,17 +1,21 @@
-﻿using Opc.Ua.Client;
-using Opc.Ua;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
+﻿using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.OPCUA2Kafka.Model;
-using Opc.Ua.Configuration;
-using GPNA.OPCUA2Kafka.Interfaces;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Opc.Ua;
+using Opc.Ua.Client;
+using Opc.Ua.Configuration;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GPNA.OPCUA2Kafka.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class OPCUAClient : IOPCUAClient
     {
         private const int ReconnectPeriod = 10;
@@ -19,33 +23,54 @@ namespace GPNA.OPCUA2Kafka.Services
         private SessionReconnectHandler? reconnectHandler;
         private readonly string _endpointURL;
         private readonly int _clientRunTime = Timeout.Infinite;
+        private readonly ITagConfigurationManager _tagConfigurationManager;
         private readonly ILogger<OPCUAClient> _logger;
-        private static bool _autoAccept = false;
+        private static bool _autoAccept = true;
         private readonly int _defaultPublishingInterval;
         private static ExitCode exitCode;
-        public IEnumerable<ITagConfiguration> TagConfigurations { get; set; }
 
-        public OPCUAClient(string endpointURL, bool autoAccept, int stopTimeout, int defaultPublishingInterval, IEnumerable<ITagConfiguration> tagConfigurations)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="endpointURL"></param>
+        /// <param name="autoaccept"></param>
+        /// <param name="stopTimeout"></param>
+        /// <param name="defaultPublishingInterval"></param>
+        /// <param name="tagConfigurationManager"></param>
+        public OPCUAClient(string endpointURL, bool autoaccept, int stopTimeout, int defaultPublishingInterval, ITagConfigurationManager tagConfigurationManager)
         {
             _endpointURL = endpointURL;
-            _autoAccept = autoAccept;
+            _autoAccept = autoaccept;
             _defaultPublishingInterval = defaultPublishingInterval;
             _clientRunTime = stopTimeout <= 0 ? Timeout.Infinite : stopTimeout * 1000;
-            TagConfigurations=tagConfigurations;
+            _tagConfigurationManager = tagConfigurationManager;
             _logger = LoggerFactory.Create(x => x.AddConsole()).CreateLogger<OPCUAClient>();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> Run()
         {
             try
             {
                 await ConsoleSampleClient();
             }
+            catch(AggregateException ae)
+            {
+                _logger.LogWarning(ae.ToString());
+
+                foreach (var item in ae.InnerExceptions)
+                {
+                    _logger.LogWarning(item.ToString());
+                }
+            }
             catch (Exception ex)
             {
-                Utils.Trace("ServiceResultException:" + ex.Message);
-                _logger.LogInformation("Exception: {0}", ex.Message);
+                var msg = $"ServiceResultException:{ex}";
+                Utils.Trace(msg);
+                _logger.LogWarning(msg);
                 return new string[] { ex.ToString() };
             }
 
@@ -76,7 +101,14 @@ namespace GPNA.OPCUA2Kafka.Services
             return new string[] { exitCode.ToString() };
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static ExitCode ExitCode { get => exitCode; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public MonitoredItemNotificationEventHandler? OnNotification { get; set; }
 
         private async Task ConsoleSampleClient()
@@ -88,30 +120,33 @@ namespace GPNA.OPCUA2Kafka.Services
             {
                 ApplicationName = "UA Core Sample Client",
                 ApplicationType = ApplicationType.Client,
-                ConfigSectionName = Utils.IsRunningOnMono() ? "GPNA.OPCUA2Kafka.Mono" : "GPNA.OPCUA2Kafka.Config"
+                ConfigSectionName = Utils.IsRunningOnMono() ? "GPNA.OPCUA2Kafka.Mono" : "GPNA.OPCUA2Kafka.Config",
+                
             };
 
             // load the application configuration.
             //$"{application.ConfigSectionName}.xml",
             ApplicationConfiguration config = await application.LoadApplicationConfiguration($"{application.ConfigSectionName}.xml", true);
-
+            config.CertificateValidator.CertificateValidation+= (s, e) => { e.Accept = true; };
             //выключаем проверку сертификатов
             config.CertificateValidator.AutoAcceptUntrustedCertificates = true;
             config.SecurityConfiguration.AutoAcceptUntrustedCertificates = true;
-
+            
+            //config.CertificateValidator=new CertificateValidator { AutoAcceptUntrustedCertificates=true};
             // check the application certificate.
             bool haveAppCertificate = await application.CheckApplicationInstanceCertificate(false, 0);
+          
             if (!haveAppCertificate)
             {
                 throw new Exception("Application instance certificate invalid!");
             }
-
+            
             if (haveAppCertificate)
             {
                 config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
                 if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
                 {
-                    _autoAccept = true;
+                    _autoAccept = true;                    
                 }
                 config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
@@ -120,22 +155,28 @@ namespace GPNA.OPCUA2Kafka.Services
                 _logger.LogWarning("WARN: missing application certificate, using unsecure connection.");
             }
 
-            _logger.LogTrace("2 - Discover endpoints of {0}.", _endpointURL);
+            _logger.LogInformation("2 - Discover endpoints of {0}.", _endpointURL);
             exitCode = ExitCode.ErrorDiscoverEndpoints;
             var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointURL, haveAppCertificate, 15000);
             _logger.LogInformation("    Selected endpoint uses: {0}",
-                selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
+                selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
+            
+            _logger.LogInformation(JsonConvert.SerializeObject(selectedEndpoint));
+            
+            selectedEndpoint.SecurityMode = MessageSecurityMode.None;
 
-            _logger.LogTrace("3 - Create a session with OPC UA server.");
+
+            _logger.LogInformation("3 - Create a session with OPC UA server.");
             exitCode = ExitCode.ErrorCreateSession;
             var endpointConfiguration = EndpointConfiguration.Create(config);
+            
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+            session = await Session.Create(config, endpoint, true, "OPC UA Console Client", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
 
             // register keep alive handler
             session.KeepAlive += Client_KeepAlive;
 
-            _logger.LogTrace("4 - Browse the OPC UA server namespace.");
+            _logger.LogInformation("4 - Browse the OPC UA server namespace.");
             exitCode = ExitCode.ErrorBrowseNamespace;
             ReferenceDescriptionCollection references;
             Byte[] continuationPoint;
@@ -154,12 +195,10 @@ namespace GPNA.OPCUA2Kafka.Services
                 out continuationPoint,
                 out references);
 
-            _logger.LogTrace(" DisplayName, BrowseName, NodeClass");
+            _logger.LogInformation(" DisplayName, BrowseName, NodeClass");
             foreach (var rd in references)
             {
-                _logger.LogTrace(" {0}, {1}, {2}", rd.DisplayName, rd.BrowseName, rd.NodeClass);
-                ReferenceDescriptionCollection nextRefs;
-                byte[] nextCp;
+                _logger.LogInformation(" {0}, {1}, {2}", rd.DisplayName, rd.BrowseName, rd.NodeClass);
                 session.Browse(
                     null,
                     null,
@@ -169,31 +208,31 @@ namespace GPNA.OPCUA2Kafka.Services
                     ReferenceTypeIds.HierarchicalReferences,
                     true,
                     (uint)NodeClass.Variable | (uint)NodeClass.Object | (uint)NodeClass.Method,
-                    out nextCp,
-                    out nextRefs);
+                    out byte[] nextCp,
+                    out ReferenceDescriptionCollection nextRefs);
 
                 foreach (var nextRd in nextRefs)
                 {
-                    _logger.LogTrace("   + {0}, {1}, {2}", nextRd.DisplayName, nextRd.BrowseName, nextRd.NodeClass);
+                    _logger.LogInformation("   + {0}, {1}, {2}", nextRd.DisplayName, nextRd.BrowseName, nextRd.NodeClass);
                 }
             }
 
-            _logger.LogTrace("5 - Create a subscription with publishing interval of 1 second.");
+            _logger.LogInformation("5 - Create a subscription with publishing interval depends on TagConfiguration.Period");
             exitCode = ExitCode.ErrorCreateSubscription;
 
-            foreach (var period in TagConfigurations.GroupBy(x => x.Period))
+            foreach (var periodgroup in _tagConfigurationManager.TagConfigurations.Values.GroupBy(x => x.Period))
             {
                 var subscription = new Subscription(session.DefaultSubscription)
                 {
-                    PublishingInterval = period.Key > 0 ? period.Key : _defaultPublishingInterval
+                    PublishingInterval = periodgroup.Key > 0 ? periodgroup.Key : _defaultPublishingInterval
                 };
 
-                _logger.LogTrace("6 - Add a list of items (server current time and status) to the subscription.");
+                _logger.LogInformation("6 - Add a list of items (server current time and status) to the subscription.");
                 exitCode = ExitCode.ErrorMonitoredItem;
-                if (TagConfigurations?.Count() > 0)
+                if (periodgroup.AsEnumerable().Count() > 0)
                 {
                     var list = new List<MonitoredItem>();
-                    foreach (var item in period.AsEnumerable())
+                    foreach (var item in periodgroup.AsEnumerable())
                     {
                         var monitoreditem = new MonitoredItem(subscription.DefaultItem)
                         {
@@ -207,19 +246,20 @@ namespace GPNA.OPCUA2Kafka.Services
                     subscription.AddItems(list);
                     foreach (var item in list)
                     {
-                        _logger.LogTrace($"item {item.DisplayName} is added to subscription");
+                        _logger.LogInformation($"item {item.DisplayName} is added to subscription");
                     }
-                    _logger.LogTrace($"7 - Add the subscription ({subscription.PublishingInterval}) to the session.");
+
+                    _logger.LogInformation($"7 - Add the subscription ({subscription.PublishingInterval}) to the session.");
                     exitCode = ExitCode.ErrorAddSubscription;
                     session.AddSubscription(subscription);
                     subscription.Create();
                 }
             }
 
-            _logger.LogTrace("8 - Running...Press Ctrl-C to exit...");
+            _logger.LogInformation("8 - Running...Press Ctrl-C to exit...");
             exitCode = ExitCode.ErrorRunning;
-
         }
+
 
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
@@ -257,6 +297,8 @@ namespace GPNA.OPCUA2Kafka.Services
 
         private void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
         {
+            _logger.LogInformation(JsonConvert.SerializeObject(e));
+
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
                 e.Accept = _autoAccept;

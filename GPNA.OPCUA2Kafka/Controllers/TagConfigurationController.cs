@@ -25,10 +25,12 @@ namespace GPNA.OPCUA2Kafka.Controllers
         #region Constructors
         public TagConfigurationController(ITagConfigurationManager tagConfigurationManager,
             IOPCUAConnectorModule oPCUAConnectorModule
+            //IPeriodizationModule periodizationModule
             )
         {
             _tagConfigurationManager = tagConfigurationManager;
             _oPCUAConnectorModule = oPCUAConnectorModule;
+            //_periodizationModule = periodizationModule;
         }
         #endregion Constructors
 
@@ -36,6 +38,7 @@ namespace GPNA.OPCUA2Kafka.Controllers
         #region Fields
         private readonly ITagConfigurationManager _tagConfigurationManager;
         private readonly IOPCUAConnectorModule _oPCUAConnectorModule;
+        //private readonly IPeriodizationModule _periodizationModule;
         #endregion Fields
 
 
@@ -52,6 +55,7 @@ namespace GPNA.OPCUA2Kafka.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public ActionResult<bool> Load()
         {
+            //Periodization - {string.Join("; ",_periodizationModule.ReloadConfig())};
             return Ok($"Tags Reloaded - {_oPCUAConnectorModule.CompleteReload().Result}");
         }
         #endregion Common

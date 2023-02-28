@@ -561,7 +561,7 @@ namespace GPNA.OPCUA2Kafka.Services
             }
         }
 
-        
+        /*
         /// <summary>
         /// Handles a click on the connect button.
         /// </summary>
@@ -588,11 +588,11 @@ namespace GPNA.OPCUA2Kafka.Services
                 throw;
             }
         }
-
+        */
+        /*
         /// <summary>
         /// Handles a domain validation error.
-        /// </summary>
-        
+        /// </summary>        
         public static StringBuilder HandleDomainCheckError(ServiceResult serviceResult, X509Certificate2? certificate = null)
         {
             StringBuilder buffer = new StringBuilder();
@@ -631,6 +631,7 @@ namespace GPNA.OPCUA2Kafka.Services
             
             return buffer;
         }
+        */
 
 
         /// <summary>

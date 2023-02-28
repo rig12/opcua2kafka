@@ -175,11 +175,6 @@
             <response code="200">Массив объектов. Формат JSON. Модель: GET /model </response>
             <returns></returns>
         </member>
-        <member name="T:GPNA.OPCUA2Kafka.Controllers.ConveyorModule.PeriodizationController">
-            <summary>
-            Управление периодизацией (дискретностью) отправки данных в кафку
-            </summary>
-        </member>
         <member name="T:GPNA.OPCUA2Kafka.Controllers.Json.TagConfigurationController">
             <summary>
             Конфигурация тегов
@@ -220,11 +215,6 @@
         <member name="T:GPNA.OPCUA2Kafka.Controllers.MessageStatusModule.OPCUAController">
             <summary>
             Состояние сбора данных с Suitelink
-            </summary>
-        </member>
-        <member name="T:GPNA.OPCUA2Kafka.Controllers.MessageStatusModule.PeriodizationController">
-            <summary>
-            Состояние отправки сообщений в Kafka
             </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Controllers.TagConfigurationController">
@@ -298,21 +288,6 @@
         <member name="P:GPNA.OPCUA2Kafka.Interfaces.IFilterDuplicateValuesModule.CurrentValues">
             <summary>
             Текущие значения тегов
-            </summary>
-        </member>
-        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IKafkaSendingModule">
-            <summary>
-            Интерфейс модуля отсылки данных в Kafka
-            </summary>
-        </member>
-        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IPeriodizationModule">
-            <summary>
-            модуль отправки данных с определённой периодичностью (последнее значение в интервале)
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Interfaces.IPeriodizationModule.ReloadConfig">
-            <summary>
-            перезагрузка конфигурации дискретности
             </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager">
@@ -596,183 +571,6 @@
         <member name="T:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule">
             <summary>
             Класс модуля отсылки данных в Kafka
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.#ctor(Microsoft.Extensions.Logging.ILogger{GPNA.OPCUA2Kafka.Services.OPCUAClientHelper})">
-            <summary>
-            Initializes the object.
-            </summary>
-        </member>
-        <member name="F:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DefaultSessionTimeout">
-            <summary>
-            Default session values.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.SessionName">
-            <summary>
-            The name of the session to create.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DisableDomainCheck">
-            <summary>
-            Gets or sets a flag indicating that the domain checks should be ignored when connecting.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.GetEndpointDescription(System.Uri)">
-            <summary>
-            Gets the cached EndpointDescription for a Url.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ServerUrl">
-            <summary>
-            The URL displayed in the control.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.UseSecurity">
-            <summary>
-            Whether to use security when connecting.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.PreferredLocales">
-            <summary>
-            The locales to use when creating the session.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.UserIdentity">
-            <summary>
-            The user identity to use when creating the session.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Configuration">
-            <summary>
-            The client application configuration.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Session">
-            <summary>
-            The currently active session. 
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectPeriod">
-            <summary>
-            The number of seconds between reconnect attempts (0 means reconnect is disabled).
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DiscoverTimeout">
-            <summary>
-            The discover timeout.
-            </summary>
-        </member>
-        <member name="P:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.SessionTimeout">
-            <summary>
-            The session timeout.
-            </summary>
-        </member>
-        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.KeepAliveComplete">
-            <summary>
-            Raised when a good keep alive from the server arrives.
-            </summary>
-        </member>
-        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectStarting">
-            <summary>
-            Raised when a reconnect operation starts.
-            </summary>
-        </member>
-        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ReconnectComplete">
-            <summary>
-            Raised when a reconnect operation completes.
-            </summary>
-        </member>
-        <member name="E:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectComplete">
-            <summary>
-            Raised after successfully connecting to or disconnecing from a server.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.GetAvailableUrls(System.Collections.Generic.IList{System.String})">
-            <summary>
-            Sets the URLs shown in the control.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Connect(Opc.Ua.ITransportWaitingConnection,Opc.Ua.EndpointDescription,System.Boolean,System.UInt32)">
-            <summary>
-            Creates a new session.
-            </summary>
-            <returns>The new session object.</returns>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Connect(System.String,System.Boolean,System.UInt32)">
-            <summary>
-            Creates a new session.
-            </summary>
-            <returns>The new session object.</returns>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectAsync(System.String,System.Boolean,System.UInt32)">
-            <summary>
-            Creates a new session.
-            </summary>
-            <param name="serverUrl">The URL of a server endpoint.</param>
-            <param name="useSecurity">Whether to use security.</param>
-            <param name="sessionTimeout"></param>
-            <returns>The new session object.</returns>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.ConnectAsync(Opc.Ua.ITransportWaitingConnection,System.Boolean,System.Int32,System.UInt32)">
-            <summary>
-            Create a new reverse connection.
-            </summary>
-            <param name="connection"></param>
-            <param name="useSecurity"></param>
-            <param name="discoverTimeout"></param>
-            <param name="sessionTimeout"></param>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DisconnectAsync">
-            <summary>
-            Disconnects from the server.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.InternalDisconnect">
-            <summary>
-            Disconnects from the server.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Disconnect">
-            <summary>
-            Disconnects from the server.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.DoConnectComplete(System.Object)">
-            <summary>
-            Raises the connect complete event on the main GUI thread.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Session_KeepAlive(Opc.Ua.Client.Session,Opc.Ua.Client.KeepAliveEventArgs)">
-            <summary>
-            Handles a keep alive event from a session.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Server_ConnectMI_Click(System.Object,System.EventArgs)">
-            <summary>
-            Handles a click on the connect button.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.HandleDomainCheckError(Opc.Ua.ServiceResult,System.Security.Cryptography.X509Certificates.X509Certificate2)">
-            <summary>
-            Handles a domain validation error.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.HandleCertificateValidationError(Opc.Ua.CertificateValidator,Opc.Ua.CertificateValidationEventArgs)">
-            <summary>
-            Handles a certificate validation error.
-            </summary>
-            <param name="validator">The validator (not used).</param>
-            <param name="e">The <see cref="T:Opc.Ua.CertificateValidationEventArgs"/> instance event arguments provided when a certificate validation error occurs.</param>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.Server_ReconnectComplete(System.Object,System.EventArgs)">
-            <summary>
-            Handles a reconnect event complete from the reconnect handler.
-            </summary>
-        </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClientHelper.CertificateValidator_CertificateValidation(Opc.Ua.CertificateValidator,Opc.Ua.CertificateValidationEventArgs)">
-            <summary>
-            Handles a certificate validation error.
             </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Services.TagConfigurationManager">

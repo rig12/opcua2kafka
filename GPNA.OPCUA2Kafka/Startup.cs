@@ -11,14 +11,12 @@ namespace GPNA.OPCUA2Kafka
     using GPNA.MessageQueue.Extensions;
     using GPNA.OPCUA2Kafka.Extensions;
     using GPNA.OPCUA2Kafka.Model;
-    using GPNA.OPCUA2Kafka.Modules.GPNA.OPCUA2Kafka.Modules;
     using GPNA.Repository;
     using GPNA.SuiteLinkConnector.Interfaces;
     using GPNA.SuiteLinkConnector.Services;
     using GPNA.Templates.Constants;
     using GPNA.Templates.Interfaces;
     using GPNA.Templates.Messages;
-    using GPNA.Templates.Modules;
     using Hellang.Middleware.ProblemDetails;
     using Interfaces;
     using Microsoft.AspNetCore.Builder;
@@ -55,7 +53,7 @@ namespace GPNA.OPCUA2Kafka
 
         private IConveyorModule<GenericMessageQueueEntity<TagValue>>? _kafkaSendingModule;
         private IOPCUAConnectorModule? _oPCUAConnectorModule;
-        private IPeriodizationModule? _periodizationModule;
+        //private IPeriodizationModule? _periodizationModule;
         private IFilterDuplicateValuesModule? _filterDuplicateValuesModule;
         private ICacheModule<GenericMessageQueueEntity<TagValue>>? _cacheModule;
         private Interfaces.ITagValueConverter? _tagValueConverter;
@@ -126,7 +124,7 @@ namespace GPNA.OPCUA2Kafka
             services.AddSingleton(_configuration.GetSection<OPCUAConfiguration>());
             services.AddSingleton(_configuration.GetSection<ConvertConfiguration>());
             services.AddSingleton(_configuration.GetSection<CacheConfiguration>());
-            services.AddSingleton(_configuration.GetSection<PeriodizationConfiguration>());
+            //services.AddSingleton(_configuration.GetSection<PeriodizationConfiguration>());
             services.AddSingleton(_configuration.GetSection<FilterConfiguration>());
             services.AddSingleton<Scheduler.Interfaces.ISchedulerFactory, Scheduler.Services.SchedulerFactory>();
             services.AddSingleton<IConveyorModule<GenericMessageQueueEntity<TagValue>>, KafkaSendingModule>();
@@ -138,7 +136,7 @@ namespace GPNA.OPCUA2Kafka
             services.AddSingleton<ITagConfigurationManager, TagConfigurationManager>();
             services.AddSingleton<Interfaces.ITagValueConverter, Services.TagValueConverter>();
             services.AddSingleton<Converters.Interfaces.ITagValueConverter, Converters.Services.TagValueConverter>();
-            services.AddSingleton<IPeriodizationModule, PeriodizationModule>();
+            //services.AddSingleton<IPeriodizationModule, PeriodizationModule>();
             services.AddSingleton<ICacheModule<GenericMessageQueueEntity<TagValue>>, CacheModule>();
             services.AddProblemDetails(ConfigureProblemDetails);
             
@@ -169,7 +167,7 @@ namespace GPNA.OPCUA2Kafka
             IWebHostEnvironment env,
             IConveyorModule<GenericMessageQueueEntity<TagValue>> kafkaSendingModule,
             IOPCUAConnectorModule oPCUAConnectorModule,
-            IPeriodizationModule periodizationModule,
+            //IPeriodizationModule periodizationModule,
             IFilterDuplicateValuesModule filterDuplicateValuesModule,
             ICacheModule<GenericMessageQueueEntity<TagValue>> cacheModule,
             Interfaces.ITagValueConverter tagValueConverter
@@ -181,7 +179,7 @@ namespace GPNA.OPCUA2Kafka
             _initializationModuleConfig = initializationModuleConfig;
             _kafkaSendingModule = kafkaSendingModule;
             _oPCUAConnectorModule = oPCUAConnectorModule;
-            _periodizationModule = periodizationModule;
+            //_periodizationModule = periodizationModule;
             _filterDuplicateValuesModule = filterDuplicateValuesModule;
             _cacheModule = cacheModule;
             _tagValueConverter = tagValueConverter;
@@ -223,10 +221,10 @@ namespace GPNA.OPCUA2Kafka
         {
             StartModule(_kafkaSendingModule, true);
             StartModule(_cacheModule, _initializationModuleConfig?.CacheStarted ?? true);
-            StartModule(_periodizationModule, _initializationModuleConfig?.PeriodizationStarted ?? true);
+            //StartModule(_periodizationModule, _initializationModuleConfig?.PeriodizationStarted ?? true);
             StartModule(_oPCUAConnectorModule, _initializationModuleConfig?.OPCUAConnectorStarted ?? true);
             StartModule(_filterDuplicateValuesModule, true);
-            (_periodizationModule as ISchedulerManager)?.StartSchedulers();
+            //(_periodizationModule as ISchedulerManager)?.StartSchedulers();
         }
         
         private void OnShutdown()
