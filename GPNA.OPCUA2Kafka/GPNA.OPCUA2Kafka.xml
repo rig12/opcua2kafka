@@ -647,5 +647,20 @@
             <param name="datetimeParseFormat"></param>
             <returns>double as is; int->x.0; bool->0.0/1.0; string->null</returns>
         </member>
+        <member name="M:GPNA.OPCUA2Kafka.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Logging.ILogger{GPNA.OPCUA2Kafka.Startup},GPNA.OPCUA2Kafka.Configurations.InitializationModuleConfiguration,Microsoft.Extensions.Hosting.IHostApplicationLifetime,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,GPNA.Templates.Interfaces.IConveyorModule{GPNA.MessageQueue.Entities.GenericMessageQueueEntity{GPNA.Converters.TagValues.TagValue}},GPNA.OPCUA2Kafka.Interfaces.IOPCUAConnectorModule,GPNA.OPCUA2Kafka.Interfaces.IFilterDuplicateValuesModule,GPNA.OPCUA2Kafka.Interfaces.ICacheModule{GPNA.MessageQueue.Entities.GenericMessageQueueEntity{GPNA.Converters.TagValues.TagValue}},GPNA.OPCUA2Kafka.Interfaces.ITagValueConverter)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="logger"></param>
+            <param name="initializationModuleConfig"></param>
+            <param name="applicationLifetime"></param>
+            <param name="env"></param>
+            <param name="kafkaSendingModule"></param>
+            <param name="oPCUAConnectorModule"></param>
+            <param name="filterDuplicateValuesModule"></param>
+            <param name="cacheModule"></param>
+            <param name="tagValueConverter"></param>
+        </member>
     </members>
 </doc>

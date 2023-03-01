@@ -162,7 +162,6 @@
     <PackageReference Include="GPNA.Repository" Version="1.0.24" />
     <PackageReference Include="GPNA.Scheduler" Version="1.0.19" />
     <PackageReference Include="GPNA.Extensions" Version="1.0.35" />
-    <PackageReference Include="GPNA.SuiteLinkConnector" Version="1.0.77" />
     <PackageReference Include="GPNA.Templates" Version="1.0.40" />
     <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="5.4.0" />
     <PackageReference Include="LiteDB" Version="5.0.12" />
