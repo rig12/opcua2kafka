@@ -52,10 +52,8 @@ namespace GPNA.OPCUA2Kafka.Modules
         public async Task<string> CompleteReload()
         //Task<string>
         {
-            _client = new(_oPCUAConfiguration.EndpointURL,
-                true,
-                Timeout.Infinite,
-                _oPCUAConfiguration.DefaultPublishingInterval,
+            _client = new(_oPCUAConfiguration,
+                Timeout.Infinite,                
                 _tagConfigurationManager)
             {
                 OnNotification = _onNotification
@@ -68,6 +66,10 @@ namespace GPNA.OPCUA2Kafka.Modules
             //return result?.ToString() ?? string.Empty;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataValueTagname"></param>
         public override void Process(DataValueTagname dataValueTagname)
         {
             if (!string.IsNullOrEmpty(dataValueTagname.Tagname)
@@ -93,7 +95,6 @@ namespace GPNA.OPCUA2Kafka.Modules
             foreach (var value in item.DequeueValues())
             {
                 Add(new DataValueTagname { DataValue = value, Tagname = item.DisplayName });
-                //Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp, value.StatusCode);
             }
         }
     }

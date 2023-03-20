@@ -583,19 +583,23 @@
             Класс модуля отсылки данных в Kafka
             </summary>
         </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule.Process(GPNA.OPCUA2Kafka.Model.DataValueTagname)">
+            <summary>
+            
+            </summary>
+            <param name="dataValueTagname"></param>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Services.OPCUAClient">
             <summary>
             
             </summary>
         </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.#ctor(System.String,System.Boolean,System.Int32,System.Int32,GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager)">
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.#ctor(GPNA.OPCUA2Kafka.Configurations.OPCUAConfiguration,System.Int32,GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager)">
             <summary>
             
             </summary>
-            <param name="endpointURL"></param>
-            <param name="autoaccept"></param>
+            <param name="oPCUAConfiguration"></param>
             <param name="stopTimeout"></param>
-            <param name="defaultPublishingInterval"></param>
             <param name="tagConfigurationManager"></param>
         </member>
         <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.Run">

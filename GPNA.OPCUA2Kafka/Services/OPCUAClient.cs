@@ -1,4 +1,6 @@
-﻿using GPNA.OPCUA2Kafka.Interfaces;
+﻿using GPNA.DataModel.EMail;
+using GPNA.OPCUA2Kafka.Configurations;
+using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.OPCUA2Kafka.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,29 +21,23 @@ namespace GPNA.OPCUA2Kafka.Services
     public class OPCUAClient : IOPCUAClient
     {
         private const int ReconnectPeriod = 10;
-        private Session? session;
+        private ISession? session;
         private SessionReconnectHandler? reconnectHandler;
-        private readonly string _endpointURL;
         private readonly int _clientRunTime = Timeout.Infinite;
         private readonly ITagConfigurationManager _tagConfigurationManager;
         private readonly ILogger<OPCUAClient> _logger;
-        private static bool _autoAccept = true;
-        private readonly int _defaultPublishingInterval;
+        private readonly OPCUAConfiguration _oPCUAConfiguration;
         private static ExitCode exitCode;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="endpointURL"></param>
-        /// <param name="autoaccept"></param>
+        /// <param name="oPCUAConfiguration"></param>
         /// <param name="stopTimeout"></param>
-        /// <param name="defaultPublishingInterval"></param>
         /// <param name="tagConfigurationManager"></param>
-        public OPCUAClient(string endpointURL, bool autoaccept, int stopTimeout, int defaultPublishingInterval, ITagConfigurationManager tagConfigurationManager)
-        {
-            _endpointURL = endpointURL;
-            _autoAccept = autoaccept;
-            _defaultPublishingInterval = defaultPublishingInterval;
+        public OPCUAClient(OPCUAConfiguration oPCUAConfiguration, int stopTimeout, ITagConfigurationManager tagConfigurationManager)
+        {            
+            _oPCUAConfiguration = oPCUAConfiguration;
             _clientRunTime = stopTimeout <= 0 ? Timeout.Infinite : stopTimeout * 1000;
             _tagConfigurationManager = tagConfigurationManager;
             _logger = LoggerFactory.Create(x => x.AddConsole()).CreateLogger<OPCUAClient>();
@@ -132,7 +128,7 @@ namespace GPNA.OPCUA2Kafka.Services
             config.CertificateValidator.AutoAcceptUntrustedCertificates = true;
             config.SecurityConfiguration.AutoAcceptUntrustedCertificates = true;
             
-            //config.CertificateValidator=new CertificateValidator { AutoAcceptUntrustedCertificates=true};
+            config.CertificateValidator=new CertificateValidator { AutoAcceptUntrustedCertificates=true};
             // check the application certificate.
             bool haveAppCertificate = await application.CheckApplicationInstanceCertificate(false, 0);
           
@@ -144,10 +140,7 @@ namespace GPNA.OPCUA2Kafka.Services
             if (haveAppCertificate)
             {
                 config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
-                if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-                {
-                    _autoAccept = true;                    
-                }
+                config.SecurityConfiguration.AutoAcceptUntrustedCertificates = _oPCUAConfiguration.AutoAccept;
                 config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
             else
@@ -155,19 +148,24 @@ namespace GPNA.OPCUA2Kafka.Services
                 _logger.LogWarning("WARN: missing application certificate, using unsecure connection.");
             }
 
-            _logger.LogInformation("2 - Discover endpoints of {0}.", _endpointURL);
+            _logger.LogInformation("2 - Discover endpoints of {0}.", _oPCUAConfiguration.EndpointURL);
             exitCode = ExitCode.ErrorDiscoverEndpoints;
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointURL, haveAppCertificate, 15000);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_oPCUAConfiguration.EndpointURL, !_oPCUAConfiguration.SecurityNone, 15000);
+            
             _logger.LogInformation("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
             
             _logger.LogInformation(JsonConvert.SerializeObject(selectedEndpoint));
-            
-            selectedEndpoint.SecurityMode = MessageSecurityMode.None;
 
-
+            if (_oPCUAConfiguration.SecurityNone)
+            {
+                selectedEndpoint.SecurityMode = MessageSecurityMode.None;
+            }
             _logger.LogInformation("3 - Create a session with OPC UA server.");
             exitCode = ExitCode.ErrorCreateSession;
+            
+
+            _logger.LogInformation(JsonConvert.SerializeObject(config.SecurityConfiguration));
             var endpointConfiguration = EndpointConfiguration.Create(config);
             
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
@@ -224,7 +222,7 @@ namespace GPNA.OPCUA2Kafka.Services
             {
                 var subscription = new Subscription(session.DefaultSubscription)
                 {
-                    PublishingInterval = periodgroup.Key > 0 ? periodgroup.Key : _defaultPublishingInterval
+                    PublishingInterval = periodgroup.Key > 0 ? periodgroup.Key : _oPCUAConfiguration.DefaultPublishingInterval
                 };
 
                 _logger.LogInformation("6 - Add a list of items (server current time and status) to the subscription.");
@@ -260,21 +258,21 @@ namespace GPNA.OPCUA2Kafka.Services
             exitCode = ExitCode.ErrorRunning;
         }
 
-
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        private void Client_KeepAlive(ISession session, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                _logger.LogInformation("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
+                _logger.LogInformation("{0} {1}/{2}", e.Status, session.OutstandingRequestCount, session.DefunctRequestCount);
 
                 if (reconnectHandler == null)
                 {
                     _logger.LogInformation("--- RECONNECTING ---");
                     reconnectHandler = new SessionReconnectHandler();
-                    reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
+                    reconnectHandler.BeginReconnect(session, ReconnectPeriod * 1000, Client_ReconnectComplete);
                 }
             }
         }
+
 
         private void Client_ReconnectComplete(object? sender, EventArgs e)
         {
@@ -301,8 +299,8 @@ namespace GPNA.OPCUA2Kafka.Services
 
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
-                e.Accept = _autoAccept;
-                if (_autoAccept)
+                e.Accept = _oPCUAConfiguration.AutoAccept;
+                if (_oPCUAConfiguration.AutoAccept)
                 {
                     _logger.LogInformation("Accepted Certificate: {0}", e.Certificate.Subject);
                 }
