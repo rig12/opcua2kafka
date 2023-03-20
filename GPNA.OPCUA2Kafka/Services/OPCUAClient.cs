@@ -251,7 +251,7 @@ namespace GPNA.OPCUA2Kafka.Services
                     subscription.AddItems(list);
                     foreach (var item in list)
                     {
-                        _logger.LogInformation($"item {item.DisplayName} is added to subscription");
+                        _logger.LogInformation($"item {item.DisplayName}(node='{item.StartNodeId}') is added to subscription");
                     }
 
                     _logger.LogInformation($"7 - Add the subscription ({subscription.PublishingInterval}) to the session.");
