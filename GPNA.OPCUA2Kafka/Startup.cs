@@ -119,7 +119,7 @@ namespace GPNA.OPCUA2Kafka
             
             services.AddSingleton(_configuration.GetSection<InitializationModuleConfiguration>());
             services.AddSingleton(_configuration.GetSection<KafkaConfiguration>());
-            services.AddSingleton(_configuration.GetSection<OPCUAConfiguration>());
+            services.AddSingleton(_configuration.GetSection<OPCUAModuleConfiguration>());
             services.AddSingleton(_configuration.GetSection<ConvertConfiguration>());
             services.AddSingleton(_configuration.GetSection<CacheConfiguration>());
             services.AddSingleton(_configuration.GetSection<FilterConfiguration>());

@@ -1,7 +1,4 @@
-﻿using GPNA.Converters.Interfaces;
-using GPNA.Converters.TagValues;
-using GPNA.DataModel.Integration;
-using GPNA.MessageQueue.Entities;
+﻿using GPNA.Converters.TagValues;
 using GPNA.OPCUA2Kafka.Configurations;
 using GPNA.OPCUA2Kafka.Extensions;
 using GPNA.OPCUA2Kafka.Interfaces;
@@ -14,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,49 +19,73 @@ using ITagValueConverter = GPNA.Converters.Interfaces.ITagValueConverter;
 
 namespace GPNA.OPCUA2Kafka.Modules
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class OPCUAConnectorModule: ConveyorModule<DataValueTagname>, IOPCUAConnectorModule
     {
         private readonly ITagValueConverter _tagValueConverter;
         private readonly ITagConfigurationManager _tagConfigurationManager;
         private readonly IFilterDuplicateValuesModule _filterDuplicateValuesModule;
-        private readonly OPCUAConfiguration _oPCUAConfiguration;
-        private OPCUAClient? _client;
+        private readonly OPCUAModuleConfiguration _oPCUAModuleConfiguration;
+
+        private List<OPCUAClient> _clients = new();
         private static Func<DateTime> DateTimeNow => () => DateTime.Now;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="messageStatusManager"></param>
+        /// <param name="schedulerFactory"></param>
+        /// <param name="logger"></param>
+        /// <param name="oPCUAModuleConfiguration"></param>
+        /// <param name="tagValueConverter"></param>
+        /// <param name="tagConfigurationManager"></param>
+        /// <param name="filterDuplicateValuesModule"></param>
         public OPCUAConnectorModule(IMessageStatusManager messageStatusManager, 
             ISchedulerFactory schedulerFactory, 
             ILogger<ConveyorModule<DataValueTagname>> logger, 
-            OPCUAConfiguration oPCUAConfiguration,
+            OPCUAModuleConfiguration oPCUAModuleConfiguration,
             ITagValueConverter tagValueConverter,
             ITagConfigurationManager tagConfigurationManager,
             IFilterDuplicateValuesModule filterDuplicateValuesModule) 
-            : base(messageStatusManager, schedulerFactory, logger, oPCUAConfiguration)
+            : base(messageStatusManager, schedulerFactory, logger, oPCUAModuleConfiguration)
         {
             _tagValueConverter = tagValueConverter;
             _tagConfigurationManager = tagConfigurationManager;
             _filterDuplicateValuesModule = filterDuplicateValuesModule;
-            _oPCUAConfiguration = oPCUAConfiguration;
+            _oPCUAModuleConfiguration = oPCUAModuleConfiguration;
             //tagConfigurationManager.Load();
 
-            Task.Run(()=> CompleteReload());
+            Task.Run(async () =>
+            {
+                foreach (var item in await CompleteReload())
+                {
+                    _logger.LogInformation(item);
+                }
+            });
         }
 
-
-        public async Task<string> CompleteReload()
-        //Task<string>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<string>> CompleteReload()
         {
-            _client = new(_oPCUAConfiguration,
-                Timeout.Infinite,                
-                _tagConfigurationManager)
+            var results = Enumerable.Empty<string>().ToList();
+            foreach (var taggroup in _tagConfigurationManager.TagConfigurations.Values.GroupBy(x=>x.ServerUrl))
             {
-                OnNotification = _onNotification
-            };
-
-            //            var result = await _client.Run();
-            return string.Join("; ", await _client.Run());
-
-
-            //return result?.ToString() ?? string.Empty;
+                var client = new OPCUAClient(_oPCUAModuleConfiguration,                    
+                Timeout.Infinite,
+                taggroup.Key,
+                taggroup.ToList())
+                {
+                    OnNotification = _onNotification
+                };
+                _clients.Add(client);
+                results.Add(string.Join("; ", await client.Run(taggroup.ToList())));
+            }
+            return results;           
         }
 
         /// <summary>

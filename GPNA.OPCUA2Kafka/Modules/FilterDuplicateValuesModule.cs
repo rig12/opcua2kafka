@@ -49,7 +49,9 @@ namespace GPNA.OPCUA2Kafka.Modules
         }
 
         #endregion
-
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, TagValue> CurrentValues => _currentValues;
         public override void Process(TagValue tagvalue)
         {

@@ -23,35 +23,42 @@ namespace GPNA.OPCUA2Kafka.Services
         private const int ReconnectPeriod = 10;
         private ISession? session;
         private SessionReconnectHandler? reconnectHandler;
+        private readonly OPCUAModuleConfiguration _oPCUAModuleConfiguration;
         private readonly int _clientRunTime = Timeout.Infinite;
-        private readonly ITagConfigurationManager _tagConfigurationManager;
+        //private readonly ITagConfigurationManager _tagConfigurationManager;
+
         private readonly ILogger<OPCUAClient> _logger;
-        private readonly OPCUAConfiguration _oPCUAConfiguration;
+        private readonly string _endpointurl;
+        private readonly IEnumerable<TagConfigurationEntity> _tags;
+
+        //private readonly OPCUAConfiguration _oPCUAConfiguration;
         private static ExitCode exitCode;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="oPCUAConfiguration"></param>
+        /// <param name="oPCUAModuleConfiguration"></param>
         /// <param name="stopTimeout"></param>
-        /// <param name="tagConfigurationManager"></param>
-        public OPCUAClient(OPCUAConfiguration oPCUAConfiguration, int stopTimeout, ITagConfigurationManager tagConfigurationManager)
-        {            
-            _oPCUAConfiguration = oPCUAConfiguration;
+        /// <param name="tags"></param>
+        public OPCUAClient(OPCUAModuleConfiguration oPCUAModuleConfiguration, int stopTimeout,string endpointurl, IEnumerable<TagConfigurationEntity> tags)
+        {
+            _oPCUAModuleConfiguration = oPCUAModuleConfiguration;
             _clientRunTime = stopTimeout <= 0 ? Timeout.Infinite : stopTimeout * 1000;
-            _tagConfigurationManager = tagConfigurationManager;
+            //_tagConfigurationManager = tagConfigurationManager;
             _logger = LoggerFactory.Create(x => x.AddConsole()).CreateLogger<OPCUAClient>();
+            _endpointurl = endpointurl;
+            _tags = tags;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> Run()
+        public async Task<IEnumerable<string>> Run(IEnumerable<TagConfigurationEntity> tags)
         {
             try
             {
-                await ConsoleSampleClient();
+                await ConsoleSampleClient(tags);
             }
             catch(AggregateException ae)
             {
@@ -107,7 +114,7 @@ namespace GPNA.OPCUA2Kafka.Services
         /// </summary>
         public MonitoredItemNotificationEventHandler? OnNotification { get; set; }
 
-        private async Task ConsoleSampleClient()
+        private async Task ConsoleSampleClient(IEnumerable<TagConfigurationEntity> tags)
         {
             _logger.LogTrace("1 - Create an Application Configuration.");
             exitCode = ExitCode.ErrorCreateApplication;
@@ -140,7 +147,7 @@ namespace GPNA.OPCUA2Kafka.Services
             if (haveAppCertificate)
             {
                 config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
-                config.SecurityConfiguration.AutoAcceptUntrustedCertificates = _oPCUAConfiguration.AutoAccept;
+                config.SecurityConfiguration.AutoAcceptUntrustedCertificates = _oPCUAModuleConfiguration.AutoAccept;
                 config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
             else
@@ -148,16 +155,16 @@ namespace GPNA.OPCUA2Kafka.Services
                 _logger.LogWarning("WARN: missing application certificate, using unsecure connection.");
             }
 
-            _logger.LogInformation("2 - Discover endpoints of {0}.", _oPCUAConfiguration.EndpointURL);
+            _logger.LogInformation("2 - Discover endpoints of {0}.", _endpointurl);
             exitCode = ExitCode.ErrorDiscoverEndpoints;
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_oPCUAConfiguration.EndpointURL, !_oPCUAConfiguration.SecurityNone, 15000);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointurl, !_oPCUAModuleConfiguration.SecurityNone, 15000);
             
             _logger.LogInformation("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
             
             _logger.LogInformation(JsonConvert.SerializeObject(selectedEndpoint));
 
-            if (_oPCUAConfiguration.SecurityNone)
+            if (_oPCUAModuleConfiguration.SecurityNone)
             {
                 selectedEndpoint.SecurityMode = MessageSecurityMode.None;
             }
@@ -218,11 +225,11 @@ namespace GPNA.OPCUA2Kafka.Services
             _logger.LogInformation("5 - Create a subscription with publishing interval depends on TagConfiguration.Period");
             exitCode = ExitCode.ErrorCreateSubscription;
 
-            foreach (var periodgroup in _tagConfigurationManager.TagConfigurations.Values.GroupBy(x => x.Period))
+            foreach (var periodgroup in _tags.GroupBy(x => x.Period))
             {
                 var subscription = new Subscription(session.DefaultSubscription)
                 {
-                    PublishingInterval = periodgroup.Key > 0 ? periodgroup.Key : _oPCUAConfiguration.DefaultPublishingInterval
+                    PublishingInterval = periodgroup.Key > 0 ? periodgroup.Key : _oPCUAModuleConfiguration.DefaultPublishingInterval
                 };
 
                 _logger.LogInformation("6 - Add a list of items (server current time and status) to the subscription.");
@@ -299,8 +306,8 @@ namespace GPNA.OPCUA2Kafka.Services
 
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
-                e.Accept = _oPCUAConfiguration.AutoAccept;
-                if (_oPCUAConfiguration.AutoAccept)
+                e.Accept = _oPCUAModuleConfiguration.AutoAccept;
+                if (_oPCUAModuleConfiguration.AutoAccept)
                 {
                     _logger.LogInformation("Accepted Certificate: {0}", e.Certificate.Subject);
                 }

@@ -3,7 +3,6 @@ using GPNA.Converters.TagValues;
 using GPNA.MessageQueue.Entities;
 using GPNA.MessageQueue.Interfaces;
 using GPNA.OPCUA2Kafka.Configurations;
-using GPNA.OPCUA2Kafka.Extensions;
 using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.Scheduler.Interfaces;
 using GPNA.Templates.Constants;
@@ -14,7 +13,7 @@ using System.Collections.Generic;
 
 namespace GPNA.OPCUA2Kafka.Modules
 {
-   
+
     /// <summary>
     /// Класс модуля отсылки данных в Kafka
     /// </summary>
@@ -51,14 +50,6 @@ namespace GPNA.OPCUA2Kafka.Modules
                     && message.Payload is TagValue tagValue
                     && _tagConfigurationManager.TagConfigurations.TryGetValue(tagValue.Tagname, out var tagconfig))
                 {
-                    //var tagname = string.IsNullOrEmpty(tagconfig.Alias) ? tagconfig.Alias : tagValue.Tagname;
-                    /*
-                    if(!_tagAliases.TryGetValue(tagconfig,out var tagalias))
-                    {
-                        _tagAliases.Add(tagconfig, tagconfig.ConvertToString());
-                    }
-                    */
-                    //tagValue.Tagname =$"{tagconfig.Node}:\\\\{tagconfig.Tagname}";
                     result.Add((tagconfig.Topic, tagValue));
                 }
             }

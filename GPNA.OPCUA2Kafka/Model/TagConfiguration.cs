@@ -2,6 +2,9 @@
 
 namespace GPNA.OPCUA2Kafka.Model
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TagConfiguration: ITagConfiguration
     {
         public string ServerUrl { get; set; } = string.Empty;

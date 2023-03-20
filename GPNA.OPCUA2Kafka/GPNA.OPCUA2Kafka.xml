@@ -75,6 +75,11 @@
             количество сообщений в пачке
             </summary>
         </member>
+        <member name="T:GPNA.OPCUA2Kafka.Configurations.OPCUAModuleConfiguration">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Controllers.ActiveModule.KafkaSendingController">
             <summary>
             Управление отправкой сообщений в Kafka
@@ -272,6 +277,20 @@
             <param name="propertyName"></param>
             <param name="value"></param>
         </member>
+        <member name="M:GPNA.OPCUA2Kafka.Extensions.Extensions.ConvertToString(GPNA.OPCUA2Kafka.Interfaces.ITagConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="tagConfiguration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Extensions.Extensions.GetNodeTree(GPNA.OPCUA2Kafka.Interfaces.ITagConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="tagConfiguration"></param>
+            <returns></returns>
+        </member>
         <member name="M:GPNA.OPCUA2Kafka.Extensions.TagConfigurationExtensions.FillTagValueData(GPNA.Converters.TagValues.TagValue,GPNA.DataModel.Integration.TagEvent)">
             <summary>
             копирование свойств из структуры <see cref="T:GPNA.DataModel.Integration.TagEvent"/>: <see cref="P:GPNA.DataModel.Integration.TagEvent.TimeStamp"/>  <see cref="P:GPNA.DataModel.Integration.TagEvent.Quality"/> <see cref="P:GPNA.DataModel.Integration.TagEvent.TimeStamp"/>
@@ -299,6 +318,17 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.IOPCUAConnectorModule">
+            <summary>
+            интерфейс модуля OPC UA - соединения
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Interfaces.IOPCUAConnectorModule.CompleteReload">
+            <summary>
+            перезагрузка конфигурации
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager">
             <summary>
@@ -578,10 +608,43 @@
             Полное наименование тэга
             </summary>
         </member>
+        <member name="T:GPNA.OPCUA2Kafka.Model.TagConfiguration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule.CurrentValues">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule">
             <summary>
             Класс модуля отсылки данных в Kafka
             </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule.#ctor(GPNA.Templates.Interfaces.IMessageStatusManager,GPNA.Scheduler.Interfaces.ISchedulerFactory,Microsoft.Extensions.Logging.ILogger{GPNA.Templates.Modules.ConveyorModule{GPNA.OPCUA2Kafka.Model.DataValueTagname}},GPNA.OPCUA2Kafka.Configurations.OPCUAModuleConfiguration,GPNA.Converters.Interfaces.ITagValueConverter,GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager,GPNA.OPCUA2Kafka.Interfaces.IFilterDuplicateValuesModule)">
+            <summary>
+            
+            </summary>
+            <param name="messageStatusManager"></param>
+            <param name="schedulerFactory"></param>
+            <param name="logger"></param>
+            <param name="oPCUAModuleConfiguration"></param>
+            <param name="tagValueConverter"></param>
+            <param name="tagConfigurationManager"></param>
+            <param name="filterDuplicateValuesModule"></param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule.CompleteReload">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule.Process(GPNA.OPCUA2Kafka.Model.DataValueTagname)">
             <summary>
@@ -594,15 +657,15 @@
             
             </summary>
         </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.#ctor(GPNA.OPCUA2Kafka.Configurations.OPCUAConfiguration,System.Int32,GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager)">
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.#ctor(GPNA.OPCUA2Kafka.Configurations.OPCUAModuleConfiguration,System.Int32,System.String,System.Collections.Generic.IEnumerable{GPNA.OPCUA2Kafka.Model.TagConfigurationEntity})">
             <summary>
             
             </summary>
-            <param name="oPCUAConfiguration"></param>
+            <param name="oPCUAModuleConfiguration"></param>
             <param name="stopTimeout"></param>
-            <param name="tagConfigurationManager"></param>
+            <param name="tags"></param>
         </member>
-        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.Run">
+        <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.Run(System.Collections.Generic.IEnumerable{GPNA.OPCUA2Kafka.Model.TagConfigurationEntity})">
             <summary>
             
             </summary>
