@@ -1,5 +1,4 @@
-﻿using GPNA.DataModel.EMail;
-using GPNA.OPCUA2Kafka.Configurations;
+﻿using GPNA.OPCUA2Kafka.Configurations;
 using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.OPCUA2Kafka.Model;
 using Microsoft.Extensions.Logging;
@@ -25,13 +24,11 @@ namespace GPNA.OPCUA2Kafka.Services
         private SessionReconnectHandler? reconnectHandler;
         private readonly OPCUAModuleConfiguration _oPCUAModuleConfiguration;
         private readonly int _clientRunTime = Timeout.Infinite;
-        //private readonly ITagConfigurationManager _tagConfigurationManager;
-
+        
         private readonly ILogger<OPCUAClient> _logger;
         private readonly string _endpointurl;
         private readonly IEnumerable<TagConfigurationEntity> _tags;
 
-        //private readonly OPCUAConfiguration _oPCUAConfiguration;
         private static ExitCode exitCode;
 
         /// <summary>
@@ -39,12 +36,12 @@ namespace GPNA.OPCUA2Kafka.Services
         /// </summary>
         /// <param name="oPCUAModuleConfiguration"></param>
         /// <param name="stopTimeout"></param>
+        /// <param name="endpointurl"></param>
         /// <param name="tags"></param>
         public OPCUAClient(OPCUAModuleConfiguration oPCUAModuleConfiguration, int stopTimeout,string endpointurl, IEnumerable<TagConfigurationEntity> tags)
         {
             _oPCUAModuleConfiguration = oPCUAModuleConfiguration;
             _clientRunTime = stopTimeout <= 0 ? Timeout.Infinite : stopTimeout * 1000;
-            //_tagConfigurationManager = tagConfigurationManager;
             _logger = LoggerFactory.Create(x => x.AddConsole()).CreateLogger<OPCUAClient>();
             _endpointurl = endpointurl;
             _tags = tags;
@@ -128,7 +125,6 @@ namespace GPNA.OPCUA2Kafka.Services
             };
 
             // load the application configuration.
-            //$"{application.ConfigSectionName}.xml",
             ApplicationConfiguration config = await application.LoadApplicationConfiguration($"{application.ConfigSectionName}.xml", true);
             config.CertificateValidator.CertificateValidation+= (s, e) => { e.Accept = true; };
             //выключаем проверку сертификатов
@@ -164,6 +160,7 @@ namespace GPNA.OPCUA2Kafka.Services
             
             _logger.LogInformation(JsonConvert.SerializeObject(selectedEndpoint));
 
+            //выключаем использование Security - SecurityNone
             if (_oPCUAModuleConfiguration.SecurityNone)
             {
                 selectedEndpoint.SecurityMode = MessageSecurityMode.None;
@@ -171,7 +168,6 @@ namespace GPNA.OPCUA2Kafka.Services
             _logger.LogInformation("3 - Create a session with OPC UA server.");
             exitCode = ExitCode.ErrorCreateSession;
             
-
             _logger.LogInformation(JsonConvert.SerializeObject(config.SecurityConfiguration));
             var endpointConfiguration = EndpointConfiguration.Create(config);
             
@@ -184,7 +180,7 @@ namespace GPNA.OPCUA2Kafka.Services
             _logger.LogInformation("4 - Browse the OPC UA server namespace.");
             exitCode = ExitCode.ErrorBrowseNamespace;
             ReferenceDescriptionCollection references;
-            Byte[] continuationPoint;
+            byte[] continuationPoint;
 
             references = session.FetchReferences(ObjectIds.ObjectsFolder);
 
@@ -234,7 +230,7 @@ namespace GPNA.OPCUA2Kafka.Services
 
                 _logger.LogInformation("6 - Add a list of items (server current time and status) to the subscription.");
                 exitCode = ExitCode.ErrorMonitoredItem;
-                if (periodgroup.AsEnumerable().Count() > 0)
+                if (periodgroup.AsEnumerable().Any())
                 {
                     var list = new List<MonitoredItem>();
                     foreach (var item in periodgroup.AsEnumerable())

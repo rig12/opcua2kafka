@@ -613,15 +613,44 @@
             
             </summary>
         </member>
+        <member name="T:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule.#ctor(GPNA.Templates.Interfaces.IMessageStatusManager,GPNA.OPCUA2Kafka.Configurations.FilterConfiguration,GPNA.OPCUA2Kafka.Configurations.ConvertConfiguration,GPNA.Templates.Interfaces.IConveyorModule{GPNA.MessageQueue.Entities.GenericMessageQueueEntity{GPNA.Converters.TagValues.TagValue}},Microsoft.Extensions.Logging.ILogger{GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule},GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager,GPNA.Scheduler.Interfaces.ISchedulerFactory)">
+            <summary>
+            
+            </summary>
+            <param name="messageStatusManager"></param>
+            <param name="filterConfiguration"></param>
+            <param name="convertConfiguration"></param>
+            <param name="kafkaSendingModule"></param>
+            <param name="logger"></param>
+            <param name="tagConfigurationManager"></param>
+            <param name="schedulerFactory"></param>
+        </member>
         <member name="P:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule.CurrentValues">
             <summary>
             
             </summary>
         </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule.Process(GPNA.Converters.TagValues.TagValue)">
+            <summary>
+            
+            </summary>
+            <param name="tagvalue"></param>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule">
             <summary>
             Класс модуля отсылки данных в Kafka
             </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Modules.KafkaSendingModule.Process(System.Collections.Generic.IEnumerable{GPNA.MessageQueue.Entities.GenericMessageQueueEntity{GPNA.Converters.TagValues.TagValue}})">
+            <summary>
+            
+            </summary>
+            <param name="messages"></param>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Modules.OPCUAConnectorModule">
             <summary>
@@ -652,6 +681,24 @@
             </summary>
             <param name="dataValueTagname"></param>
         </member>
+        <member name="T:GPNA.OPCUA2Kafka.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:GPNA.OPCUA2Kafka.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
         <member name="T:GPNA.OPCUA2Kafka.Services.OPCUAClient">
             <summary>
             
@@ -663,6 +710,7 @@
             </summary>
             <param name="oPCUAModuleConfiguration"></param>
             <param name="stopTimeout"></param>
+            <param name="endpointurl"></param>
             <param name="tags"></param>
         </member>
         <member name="M:GPNA.OPCUA2Kafka.Services.OPCUAClient.Run(System.Collections.Generic.IEnumerable{GPNA.OPCUA2Kafka.Model.TagConfigurationEntity})">

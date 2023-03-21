@@ -7,9 +7,16 @@ using System;
 
 namespace GPNA.OPCUA2Kafka
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Program
     {
         private static IConfiguration Configuration { get; set; } = null!;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
@@ -21,6 +28,11 @@ namespace GPNA.OPCUA2Kafka
             CreateHostBuilder(args).Build().Run();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -28,12 +40,12 @@ namespace GPNA.OPCUA2Kafka
                     webBuilder.UseKestrel()
                         .UseConfiguration(Configuration)
                         .UseStaticWebAssets()
-                        .UseStartup<Startup>()                        
+                        .UseStartup<Startup>()
                         .ConfigureLogging(logging =>
                         {
                             logging.ClearProviders();
                             logging.SetMinimumLevel(LogLevel.Trace);
-                        })
+                        })                        
                         .UseNLog();
                 }).UseWindowsService();
     }

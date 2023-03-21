@@ -40,6 +40,10 @@ namespace GPNA.OPCUA2Kafka.Modules
         }
         #endregion Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="messages"></param>
         public override void Process(IEnumerable<GenericMessageQueueEntity<TagValue>> messages)
         {
             var result = new List<(string, TagValue)>();

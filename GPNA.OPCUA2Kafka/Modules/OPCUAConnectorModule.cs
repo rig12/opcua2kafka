@@ -55,8 +55,7 @@ namespace GPNA.OPCUA2Kafka.Modules
             _tagConfigurationManager = tagConfigurationManager;
             _filterDuplicateValuesModule = filterDuplicateValuesModule;
             _oPCUAModuleConfiguration = oPCUAModuleConfiguration;
-            //tagConfigurationManager.Load();
-
+            
             Task.Run(async () =>
             {
                 foreach (var item in await CompleteReload())

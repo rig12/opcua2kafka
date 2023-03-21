@@ -4,7 +4,6 @@ using GPNA.Converters.TagValues;
 using GPNA.MessageQueue.Entities;
 using GPNA.OPCUA2Kafka.Configurations;
 using GPNA.OPCUA2Kafka.Interfaces;
-using GPNA.OPCUA2Kafka.Services;
 using GPNA.Scheduler.Interfaces;
 using GPNA.Templates.Interfaces;
 using GPNA.Templates.Modules;
@@ -14,13 +13,15 @@ using System.Collections.Generic;
 
 namespace GPNA.OPCUA2Kafka.Modules
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class FilterDuplicateValuesModule : ConveyorModule<TagValue>, IFilterDuplicateValuesModule
     {
         private readonly FilterConfiguration _filterConfiguration;
         private readonly IConveyorModule<GenericMessageQueueEntity<TagValue>> _kafkaSendingModule;
         private readonly ITagConfigurationManager _tagConfigurationManager;
 
-        //private readonly IPeriodizationModule _periodizationModule;
         private readonly ConvertConfiguration _convertConfiguration;
 
         private readonly ConcurrentDictionary<string, string?> _currentStrValues = new();
@@ -29,11 +30,19 @@ namespace GPNA.OPCUA2Kafka.Modules
 
         #region ctor
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="messageStatusManager"></param>
+        /// <param name="filterConfiguration"></param>
+        /// <param name="convertConfiguration"></param>
+        /// <param name="kafkaSendingModule"></param>
+        /// <param name="logger"></param>
+        /// <param name="tagConfigurationManager"></param>
+        /// <param name="schedulerFactory"></param>
         public FilterDuplicateValuesModule(IMessageStatusManager messageStatusManager,
             FilterConfiguration filterConfiguration,
             ConvertConfiguration convertConfiguration,
-            //IPeriodizationModule periodizationModule,
             IConveyorModule<GenericMessageQueueEntity<TagValue>> kafkaSendingModule,
             ILogger<FilterDuplicateValuesModule> logger,
             ITagConfigurationManager tagConfigurationManager,
@@ -42,7 +51,6 @@ namespace GPNA.OPCUA2Kafka.Modules
             : base(messageStatusManager, schedulerFactory, logger, filterConfiguration)
         {            
             _convertConfiguration = convertConfiguration;
-            //_periodizationModule = periodizationModule;
             _filterConfiguration = filterConfiguration;
             _kafkaSendingModule = kafkaSendingModule;
             _tagConfigurationManager = tagConfigurationManager;
@@ -53,6 +61,11 @@ namespace GPNA.OPCUA2Kafka.Modules
         /// 
         /// </summary>
         public IReadOnlyDictionary<string, TagValue> CurrentValues => _currentValues;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tagvalue"></param>
         public override void Process(TagValue tagvalue)
         {
             var tosend = true;
@@ -67,7 +80,7 @@ namespace GPNA.OPCUA2Kafka.Modules
             }
             if (_filterConfiguration.IsEnabled == true)
             {
-                var value = tagvalue.GetValue()?.ToString();
+                var value = tagvalue.GetStringValue()?.ToString();
 
                 if (_currentStrValues.TryGetValue(tagvalue.Tagname, out var archivedStrValue))
                 {
