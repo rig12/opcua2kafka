@@ -17,11 +17,14 @@ namespace GPNA.OPCUA2Kafka.Extensions
                 string.Empty;
         }
 
-
+        /// <summary>
+        /// проверка корректности содержания конфигурации тега
+        /// </summary>
+        /// <param name="tagConfiguration"></param>
+        /// <returns></returns>
         public static bool Validated(this ITagConfiguration tagConfiguration)
         {
             return !string.IsNullOrEmpty(tagConfiguration.ServerUrl)
-                && !string.IsNullOrEmpty(tagConfiguration.Tagname)
                 && !string.IsNullOrEmpty(tagConfiguration.Topic)
                 && !string.IsNullOrEmpty(tagConfiguration.Alias);
         }

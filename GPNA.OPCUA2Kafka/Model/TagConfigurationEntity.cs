@@ -4,11 +4,13 @@ using GPNA.Repository;
 
 namespace GPNA.OPCUA2Kafka.Model
 {
-    [AutoMap(typeof(TagConfiguration), ReverseMap = true)]
+    /// <summary>
+    /// конфигурация тега для сбора по OPC UA для хранения в БД конфигурации
+    /// </summary>
+    [AutoMap(typeof(TagConfiguration), ReverseMap = true)]    
     public class TagConfigurationEntity : EntityBase, ITagConfiguration
     {
         public string ServerUrl { get; set; } = string.Empty;
-        public string Tagname { get; set; } = string.Empty;
         public string Topic { get; set; } = string.Empty;
         public string Alias { get; set; } = string.Empty;
         public string Node { get; set; } = string.Empty;

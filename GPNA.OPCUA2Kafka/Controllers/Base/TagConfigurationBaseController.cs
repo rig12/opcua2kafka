@@ -47,10 +47,10 @@
                 .Cast<TagConfigurationEntity>();
         }
 
-        protected IEnumerable<TagConfigurationEntity> GetTagsByTagname(string tagname)
+        protected IEnumerable<TagConfigurationEntity> GetTagsByAlias(string tagname)
         {
             return _tagConfigurationManager.TagConfigurations.Values.Where(x =>
-                x?.Tagname is string notnulltagname && notnulltagname.Contains(tagname, System.StringComparison.OrdinalIgnoreCase))
+                x?.Alias is string notnulltagname && notnulltagname.Contains(tagname, System.StringComparison.OrdinalIgnoreCase))
                 .Cast<TagConfigurationEntity>();
         }
         #endregion Methods

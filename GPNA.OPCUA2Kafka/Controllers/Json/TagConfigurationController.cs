@@ -73,7 +73,7 @@ namespace GPNA.OPCUA2Kafka.Controllers.Json
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<TagConfigurationEntity>> GetByTagname([Required] string tagname)
         {
-            var items = GetTagsByTagname(tagname);
+            var items = GetTagsByAlias(tagname);
             if (items == default)
             {
                 return NotFound(tagname);

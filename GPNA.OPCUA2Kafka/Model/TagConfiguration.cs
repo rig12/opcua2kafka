@@ -3,12 +3,11 @@
 namespace GPNA.OPCUA2Kafka.Model
 {
     /// <summary>
-    /// 
+    /// конфигурация тега для сбора по OPC UA
     /// </summary>
     public class TagConfiguration: ITagConfiguration
     {
         public string ServerUrl { get; set; } = string.Empty;
-        public string Tagname { get; set; } = string.Empty;
         public string Topic { get; set; } = string.Empty;
         public string Alias { get; set; } = string.Empty;
         public string Node { get; set; } = string.Empty;

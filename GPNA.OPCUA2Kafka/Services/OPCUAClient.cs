@@ -1,4 +1,5 @@
 ﻿using GPNA.OPCUA2Kafka.Configurations;
+using GPNA.OPCUA2Kafka.Extensions;
 using GPNA.OPCUA2Kafka.Interfaces;
 using GPNA.OPCUA2Kafka.Model;
 using Microsoft.Extensions.Logging;
@@ -237,7 +238,7 @@ namespace GPNA.OPCUA2Kafka.Services
                     {
                         var monitoreditem = new MonitoredItem(subscription.DefaultItem)
                         {
-                            DisplayName = item.Tagname,
+                            DisplayName = item.ConvertToString(),
                             StartNodeId = item.Node
                         };
                         monitoreditem.Notification += OnNotification;

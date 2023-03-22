@@ -74,15 +74,22 @@ namespace GPNA.OPCUA2Kafka.Modules
             var results = Enumerable.Empty<string>().ToList();
             foreach (var taggroup in _tagConfigurationManager.TagConfigurations.Values.GroupBy(x=>x.ServerUrl))
             {
-                var client = new OPCUAClient(_oPCUAModuleConfiguration,                    
-                Timeout.Infinite,
-                taggroup.Key,
-                taggroup.ToList())
+                try
                 {
-                    OnNotification = _onNotification
-                };
-                _clients.Add(client);
-                results.Add(string.Join("; ", await client.Run(taggroup.ToList())));
+                    var client = new OPCUAClient(_oPCUAModuleConfiguration,
+                    Timeout.Infinite,
+                    taggroup.Key,
+                    taggroup.ToList())
+                    {
+                        OnNotification = _onNotification
+                    };
+                    _clients.Add(client);
+                    results.Add(string.Join("; ", await client.Run(taggroup.ToList())));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Faile to create OPC UA Client: {ex}");
+                }
             }
             return results;           
         }
@@ -98,7 +105,7 @@ namespace GPNA.OPCUA2Kafka.Modules
                 && dataValue.Value.ToString() is string value)
             {
                 var tagvalue = _tagValueConverter.GetTagValue(value, dataValue.SourceTimestamp, dataValueTagname.Tagname, (int)dataValue.StatusCode.Code);
-                if (_tagConfigurationManager.TagConfigurations.Values.FirstOrDefault(x=>x.Tagname==tagvalue.Tagname) is TagConfigurationEntity tagconfig)
+                if (_tagConfigurationManager.TagConfigurations.Values.FirstOrDefault(x => x.ConvertToString() == tagvalue.Tagname) is TagConfigurationEntity tagconfig)
                 {
                     tagvalue.TimeStampUtc = DateTimeNow().ToUniversalTime();
                     tagvalue.OpcQuality = (int)dataValue.StatusCode.Code;

@@ -284,6 +284,13 @@
             <param name="tagConfiguration"></param>
             <returns></returns>
         </member>
+        <member name="M:GPNA.OPCUA2Kafka.Extensions.Extensions.Validated(GPNA.OPCUA2Kafka.Interfaces.ITagConfiguration)">
+            <summary>
+            проверка корректности содержания конфигурации тега
+            </summary>
+            <param name="tagConfiguration"></param>
+            <returns></returns>
+        </member>
         <member name="M:GPNA.OPCUA2Kafka.Extensions.Extensions.GetNodeTree(GPNA.OPCUA2Kafka.Interfaces.ITagConfiguration)">
             <summary>
             
@@ -329,6 +336,11 @@
             перезагрузка конфигурации
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfiguration">
+            <summary>
+            конфигурация тега для сбора по OPC UA
+            </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Interfaces.ITagConfigurationManager">
             <summary>
@@ -608,9 +620,19 @@
             Полное наименование тэга
             </summary>
         </member>
-        <member name="T:GPNA.OPCUA2Kafka.Model.TagConfiguration">
+        <member name="T:GPNA.OPCUA2Kafka.Model.DataValueTagname">
             <summary>
             
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Model.TagConfiguration">
+            <summary>
+            конфигурация тега для сбора по OPC UA
+            </summary>
+        </member>
+        <member name="T:GPNA.OPCUA2Kafka.Model.TagConfigurationEntity">
+            <summary>
+            конфигурация тега для сбора по OPC UA для хранения в БД конфигурации
             </summary>
         </member>
         <member name="T:GPNA.OPCUA2Kafka.Modules.FilterDuplicateValuesModule">
