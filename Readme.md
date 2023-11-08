@@ -1,5 +1,4 @@
 # Сервис отправки значений тэгов, получаемых по OPC UA, в kafka 
-[GPNA.OPCUA2Kafka](https://git.jetbrains.space/gpna/gpna-opc/GPNA.OPCUA2Kafka.git)
 
 <hr />
 Документация на Web API доступна на http://<serviceuri>:4444/swagger.

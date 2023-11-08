@@ -23,7 +23,7 @@ namespace OPCUA2Kafka.Configurations
         /// <summary>
         /// Идентификатор клиент-сервиса
         /// </summary>
-        public string ClientId { get; set; } = "gpna_client_id";
+        public string ClientId { get; set; } = "client_id";
 
         /// <summary>
         /// отчёт о доставке
