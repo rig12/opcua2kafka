@@ -1,16 +1,16 @@
 ﻿
 namespace GPNA.OPCUA2Kafka.Modules
 {
-    using global::GPNA.Converters.TagValues;
-    using global::GPNA.Extensions.Types;
-    using global::GPNA.MessageQueue.Entities;
-    using global::GPNA.OPCUA2Kafka.Configurations;
-    using global::GPNA.OPCUA2Kafka.Extensions;
-    using global::GPNA.OPCUA2Kafka.Interfaces;
-    using global::GPNA.OPCUA2Kafka.Model;
-    using global::GPNA.Scheduler.Interfaces;
-    using global::GPNA.Templates.Interfaces;
-    using global::GPNA.Templates.Modules;
+    using global::Converters.TagValues;
+    using global::Extensions.Types;
+    using global::MessageQueue.Entities;
+    using global::OPCUA2Kafka.Configurations;
+    using global::OPCUA2Kafka.Extensions;
+    using global::OPCUA2Kafka.Interfaces;
+    using global::OPCUA2Kafka.Model;
+    using global::Scheduler.Interfaces;
+    using global::Templates.Interfaces;
+    using global::Templates.Modules;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using System.Collections.Concurrent;
